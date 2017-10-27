@@ -21,6 +21,31 @@ const Mural = (function(_render, Filtro){
     }
 
     function preparaCartao(cartao){
+        /*console.log("pegando as imagens...");
+        let urlsImagens = Cartao.pegaImagens(cartao);
+        console.log(urlsImagens);
+        urlsImagens.forEach(url => {
+            fetch(url)
+                .then(res => {
+                    caches.open('ceep-imagens')
+                        .then(cache=> {
+                            cache.put(url, res);
+                        })
+                })
+        })*/
+
+        const urlsImagens = Cartao.pegaImagens(cartao)
+        urlsImagens.forEach(url => {
+          fetch(url).then((resposta) => {
+            caches.open("ceep-imagens").then(cache => {
+              cache.put(url, resposta)
+              });
+          })
+          .catch(err=>{
+              console.log(err);
+          });
+        });
+
         cartao.on("mudanca.**", salvaCartoes)
         cartao.on("remocao", ()=>{
             cartoes = cartoes.slice(0)
@@ -61,7 +86,16 @@ const Mural = (function(_render, Filtro){
             //localStorage.setItem("cartoes", JSON.stringify(cartoes))
             salvaCartoes();
             cartao.on("mudanca.**", render)
-            preparaCartao(cartao);            
+            preparaCartao(cartao);
+            /*let urlImagens = Cartao.pegaImagens(cartao);
+            caches.open('ceep-imagens')
+                .then(cache => {
+                    cache.matchAll(urlImagens) 
+                        .then(listaResposta=> 
+                            // RESPONSE
+                            listaResposta;
+                        });
+                })*/
             render()
             return true
         } else {
